@@ -15,34 +15,60 @@
 - 格式
     - 基本格式`{"cmd": ..., "args": {...}}`
     - 命令：    
-        - start: {password/username}
+        - start: {token/username}
+            - 提供方式：
+                - {username, password}：在这里login
+                - {token}：已经login了
+                - {username}：打开匿名
             - 打开ws接口，提供密码之后就不再需要密码
             - 如果不提供密码，必须提供临时username
+        - online: {room}
+            - 返回room中的在线用户的用户信息
+            - 用户users: 【】
+                - user: {username, trip, head}
         - help: {room}
             - 在room显示帮助信息
         - join: {room}
             - 加入讨论，开始接收这个room的消息
+            - 接收到join消息则加入在线用户列表的信息
         - chat: {room, type, content}
             - 发送消息
             - 消息类型：{text, image}
 
-*其他数据传输*
-- login: {password}
+*其他数据传输*(**使用GET**)
+- login: {username, password}
     - 登录即注册
     - 名字会和密码直接绑定
     - 不输入密码就不会绑定
-- destroy: {password}
+    - 登录后返回token
+- info
+    - 查询房中他人信息: {username, room}
+        - ->{username, trip, info: {head, email, motto}}
+    - 设置自己的信息: {token, head, email, motto}
+- destroy: {token}
     - 注销该绑定
-- history: {room, startTime, stopTime}
+    - 注销之后所以有关记录内容清除（待定）
+- history:
+    - 提供时间 {token, room, startTime, stopTime, limit, offset}
+    - 按条查询 {token, room, limit, offset}
     - 查询聊天历史记录
+    - 能看到给你的私聊
 
 *数据结构和储存*
 - 消息
-    - {room, type, content, time, username, status}
+    - {room, type, content, time, 
+    username, visibility, status, direction}
 - 用户
-    - {username, password(md5), trip(password(md5) -> map)}
+    - {username, password(md5), 
+    trip(password(md5) -> map),
+    role,
+    info: {head, email, motto}}
 - logs
     - {type, data}
+- token
+    - 已经登录成功的用户对应token，对应单次登录有效
+    - 匿名状态对应也有token
+    - {username, trip, token}
 
 *性能提升*
 - 暂无

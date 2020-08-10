@@ -26,8 +26,6 @@ async def start(ws):
             continue
 
 
-
-
 async def parser(ws):
     while True:
         pass
