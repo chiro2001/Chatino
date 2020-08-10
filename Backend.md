@@ -61,14 +61,27 @@
 - 用户
     - {username, password(md5), 
     trip(password(md5) -> map),
-    role,
-    info: {head, email, motto}}
+    info: {head, email, motto, status, role...}}
 - logs
     - {type, data}
 - token
     - 已经登录成功的用户对应token，对应单次登录有效
     - 匿名状态对应也有token
     - {username, trip, token}
+    - token对应全部功能的访问权限控制
+-unit
+    - {username, token, ws, user: {username, info:{}, trip...}}
+    - user项只有注册后才有
+
+*前后端数据接口*
+**格式**
+```json
+{
+  "cmd": "message",
+  "args": {}
+}
+```
+- message
 
 *性能提升*
 - 暂无

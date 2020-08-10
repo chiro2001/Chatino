@@ -5,9 +5,8 @@ Description: Chatino数据库操作部分
 import pymongo
 import hashlib
 import time
-import config
-from config import ChatinoException
-import utils
+from Chatino.config import ChatinoException
+from Chatino import utils, config
 
 
 class ChatinoDB:
@@ -21,7 +20,7 @@ class ChatinoDB:
     def user_find(self, username):
         data = list(self.col.user.find({'username': username}))
         if len(data) == 0:
-            return None
+            raise ChatinoException.UsernameNotFound('User %s not found!' % username)
         return data[0]
 
     # 用户是否存在
@@ -78,19 +77,66 @@ class ChatinoDB:
         self.col.user.delete_one({'username': username})
         return True
 
-    # 生成token，返回{'username': ..., 'token': ..., 'trip': ...}
-    # 生成token代码：md5(username + trip + time.time())
-    def token_create(self, username) -> dict:
-        if not self.user_exist(username):
-            raise ChatinoException.UsernameNotFound('Username %s not found!' % username)
-        user = self.user_find(username)
-        # 直接使用user结构，增加token项目
-        result = user
+    def token_exist(self, token: str) -> bool:
+        if len(list(self.col.token.find({'token': token}))) == 0:
+            return False
+        return True
 
-        token = hashlib.md5((username + user['trip'] + str(time.time())).encode()).hexdigest()
-        result['token'] = token
+    def token_username_exist(self, username: str) -> bool:
+        if len(list(self.col.token.find({'username': username}))) == 0:
+            return False
+        return True
+
+    # 返回{username, token}
+    def token_find_username(self, username: str):
+        if not self.token_username_exist(username):
+            return None
+        return list(self.col.token.find({'username': username}))[0]
+
+    def token_find(self, token: str):
+        if not self.token_exist(token):
+            return None
+        return list(self.col.token.find({'token': token}))[0]
+
+    def token_to_username(self, token):
+        data = self.token_find(token)
+        if data is None:
+            return None
+        return data['username']
+
+    # 生成token，返回{'username': ..., 'token': ..., 'trip': ...}
+    # token储存结构{username, token, create_time}
+    # 生成token代码：md5(username + trip + time.time()), md5(username + time.time())
+    def token_create(self, username) -> dict:
+        # 匿名模式下不注册
+        if not self.user_exist(username):
+            # 匿名了
+            # raise ChatinoException.UsernameNotFound('Username %s not found!' % username)
+            token = hashlib.md5((username + str(time.time())).encode()).hexdigest()
+            result = {'username': username, 'token': token}
+        else:
+            user = self.user_find(username)
+            # 直接使用user结构，增加token项目
+            result = user
+
+            token = hashlib.md5((username + user['trip'] + str(time.time())).encode()).hexdigest()
+            result['token'] = token
+
+        # 在数据库中单独储存token
+        if not self.token_username_exist(username):
+            self.col.token.insert_one({
+                'username': username,
+                'token': token,
+                'create_time': time.time(),
+            })
+        else:
+            self.col.token.update_one({'username': username}, {'$set': {'token': token, 'create_time': time.time()}})
 
         return result
+
+    def token_destroy(self, username):
+        if not self.token_username_exist(username):
+            raise ChatinoException.UsernameNotFound('Token %s not found!' % username)
 
     def message_mid_create(self):
         query = list(self.col.message.find({'updated': True}))
@@ -186,6 +232,16 @@ if __name__ == '__main__':
     # # 日志系统测试
     # print('logs_insert', _db.logs_insert({'code': 0, 'message': 'Success', 'data': {}}))
     # print('logs_select', list(_db.logs_select(0)))
+
+    # # token系统测试
+    # _create = _db.token_create('chino')
+    # print('token_create', _create)
+    # _token = _create['token']
+    # print('token_find', _db.token_find('chino'))
+    # print('token_username_exist', _db.token_username_exist('chino'))
+    # print('token_to_username', _db.token_to_username(_token))
+    # print('token_destroy', _db.token_destroy('chino'))
+    # print('token_find', _db.token_find('chino'))
 
     pass
 

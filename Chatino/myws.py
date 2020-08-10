@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 import json
-import utils
+from Chatino import utils
 
 
 async def start(ws):

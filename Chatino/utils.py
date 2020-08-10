@@ -1,5 +1,5 @@
 import json
-import config
+from Chatino import config
 import hashlib
 
 
@@ -29,6 +29,13 @@ def make_result(code: int, message=None, data=None):
 
 def make_error_result(error):
     return make_result(1, message=str(error))
+
+
+def make_message(message: config.Message):
+    return make_result(0, message='Received a new message.', data={
+        'cmd': 'message',
+        'args': message.to_dict()
+    })
 
 
 def dump(data):
