@@ -22,11 +22,11 @@
                 - {username}：打开匿名
             - 打开ws接口，提供密码之后就不再需要密码
             - 如果不提供密码，必须提供临时username
-        - online: {room}
+        - online: {room} [x]
             - 返回room中的在线用户的用户信息
             - 用户users: 【】
                 - user: {username, trip, head}
-        - help: {room}
+        - help: {room} [x]
             - 在room显示帮助信息
         - join: {room}
             - 加入讨论，开始接收这个room的消息
@@ -43,7 +43,7 @@
     - 登录后返回token
 - info
     - 查询房中他人信息: {username, room}
-        - ->{username, trip, info: {head, email, motto}}
+        - ->{username, trip, info: {head, email, motto}}(unit-)
     - 设置自己的信息: {token, head, email, motto}
 - destroy: {token}
     - 注销该绑定

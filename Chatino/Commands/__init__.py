@@ -58,5 +58,9 @@ commands_table = {
             }
         },
         'function': basic_functions.whisper
-    }
+    },
+    'exit': {
+        'args': {},
+        'function': basic_functions.exit_
+    },
 }

@@ -1,4 +1,4 @@
-# paike-admin
+# chatino
 
 ## Project setup
 ```
