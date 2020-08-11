@@ -107,13 +107,16 @@ class ChatinoDB:
     # 生成token，返回{'username': ..., 'token': ..., 'trip': ...}
     # token储存结构{username, token, create_time}
     # 生成token代码：md5(username + trip + time.time()), md5(username + time.time())
-    def token_create(self, username) -> dict:
+    def token_create(self, username) -> config.Unit:
         # 匿名模式下不注册
         if not self.user_exist(username):
             # 匿名了
             # raise ChatinoException.UsernameNotFound('Username %s not found!' % username)
             token = hashlib.md5((username + str(time.time())).encode()).hexdigest()
-            result = {'username': username, 'token': token}
+            # result = {'username': username, 'token': token}
+            # 暂时没法返回ws，需要后续补充
+            # user也没法使用
+            unit = config.Unit(username, token, None, user=None)
         else:
             user = self.user_find(username)
             # 直接使用user结构，增加token项目
@@ -121,6 +124,8 @@ class ChatinoDB:
 
             token = hashlib.md5((username + user['trip'] + str(time.time())).encode()).hexdigest()
             result['token'] = token
+            # ws需要补充
+            unit = config.Unit(username, token, None, user=user)
 
         # 在数据库中单独储存token
         if not self.token_username_exist(username):
@@ -132,7 +137,7 @@ class ChatinoDB:
         else:
             self.col.token.update_one({'username': username}, {'$set': {'token': token, 'create_time': time.time()}})
 
-        return result
+        return unit
 
     def token_destroy(self, username):
         if not self.token_username_exist(username):

@@ -158,6 +158,14 @@ class ChatinoException:
         def my_init(self):
             self.error_type = 'Room Not Found Error'
 
+    class HasInRoom(BaseException):
+        def my_init(self):
+            self.error_type = "Has In Room Error"
+
+    class NotInRoom(BaseException):
+        def my_init(self):
+            self.error_type = "Not In Room Error"
+
 
 
 '''
@@ -171,6 +179,8 @@ logger = get_logger(__name__)
 # 利用ws可以向单个用户post消息
 online_users = {}
 
-# 房间中的人，{username: unit}
+# 房间中的人，room_users = {
+#   username: {unit}
+# }
 room_users = {}
 

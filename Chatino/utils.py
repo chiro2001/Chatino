@@ -31,6 +31,7 @@ def make_error_result(error):
     return make_result(1, message=str(error))
 
 
+# 新消息的结构
 def make_message(message: config.Message):
     return make_result(0, message='Received a new message.', data={
         'cmd': 'message',

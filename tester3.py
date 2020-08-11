@@ -36,7 +36,7 @@ def test_chat():
     ws.send(json.dumps({
         'cmd': 'start',
         'args': {
-            'username': 'chiro',
+            'username': '芝楼',
         }
     }))
     time.sleep(0.5)
@@ -46,19 +46,8 @@ def test_chat():
             'room': 'my_room',
         }
     }))
-    time.sleep(0.5)
-    count = 0
     while True:
-        time.sleep(1)
-        ws.send(json.dumps({
-            'cmd': 'chat',
-            'args': {
-                'room': "my_room",
-                'text': "聊天！(%s)" % count
-            }
-        }))
-        count = count + 1
-
+        time.sleep(0.5)
     # ws.close()
 
 
