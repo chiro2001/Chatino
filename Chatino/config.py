@@ -44,11 +44,31 @@ print(a)
     trip = 'Z5q19nAL7XJOR0dNugMk2HIQa6WifPVclzyK8SEoGeFh3TvUpDbxCBYsrw4jtm'
 
 
+'''
+常量部分
+'''
+
+# WS_BIND = '0.0.0.0'
+WS_BIND = 'localhost'
+WS_PORT = 10086
+# 版本名称规范：
+# 使用float方便比较大小
+# 此处的
+VERSION = 0.1
+
+
+# 预置的一些数据
+class Presets:
+    user_system = 'user_system'
+
+
 class MessageType:
     text = 'text'
+    whisper = 'whisper'
     image = 'image'
     file = 'file'
     link = 'link'
+    system = 'system'
 
 
 class Visibility:
@@ -57,7 +77,7 @@ class Visibility:
 
 
 class Direction:
-    public = None
+    public = 'public'
 
 
 class Status:
@@ -68,9 +88,10 @@ class Status:
 class Message:
     def __init__(self, room: str, username: str, content: str, time: float,
                  type_: MessageType = MessageType.text, visibility: Visibility = Visibility.public,
-                 status: Status = Status.available, direction: Direction = Direction.public):
-        self.room, self.username, self.content, self.time, self.type_, self.visibility, self.status, self.direction = \
-            room, username, content, time, type_, visibility, status, direction
+                 status: Status = Status.available, direction: Direction = Direction.public,
+                 msg: str = None):
+        self.room, self.username, self.content, self.time, self.type_, self.visibility, self.status, self.direction \
+            , self.msg = room, username, content, time, type_, visibility, status, direction, msg
 
     def to_dict(self):
         return {
@@ -82,7 +103,27 @@ class Message:
             'visibility': self.visibility,
             'status': self.status,
             'direction': self.direction,
+            'msg': self.msg,
         }
+
+
+# 系统消息结构
+# 用户名显示为Preset.user_system，消息类型为system
+class SystemMessage(Message):
+    # 系统消息
+    class Texts:
+        message = {'msg': 'message', 'content': '系统消息: %s。'}
+        join = {'msg': 'join', 'content': '%s 加入了房间。'}
+        exit_ = {'msg': 'exit', 'content': '%s 退出了房间。'}
+        hit = {'msg': 'hit', 'content': '%s 拍了拍 %s。'}
+
+    def __init__(self, room: str, content: str, time: float, type_: MessageType = MessageType.system,
+                 visibility: Visibility = Visibility.public, status: Status = Status.available,
+                 direction: Direction = Direction.public, username: str = Presets.user_system,
+                 msg=None):
+        if msg is None:
+            msg = self.Texts.message
+        super().__init__(room, username, content, time, type_, visibility, status, direction, msg)
 
 
 # 在内存中一个人表示成一个单位
@@ -115,14 +156,6 @@ class Role:
     # 网站拥有者，拥有最高权限
     owner = 0x80000000
 
-
-'''
-常量部分
-'''
-
-# WS_BIND = '0.0.0.0'
-WS_BIND = 'localhost'
-WS_PORT = 10086
 
 '''
 Exception 部分
@@ -167,7 +200,6 @@ class ChatinoException:
             self.error_type = "Not In Room Error"
 
 
-
 '''
 Running 部分：在运行中使用的全局变量
 '''
@@ -183,4 +215,3 @@ online_users = {}
 #   username: {unit}
 # }
 room_users = {}
-

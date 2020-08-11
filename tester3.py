@@ -46,6 +46,15 @@ def test_chat():
             'room': 'my_room',
         }
     }))
+    time.sleep(0.5)
+    ws.send(json.dumps({
+        'cmd': 'whisper',
+        'args': {
+            'room': 'my_room',
+            'text': "这是一条私聊",
+            'target': 'lance',
+        }
+    }))
     while True:
         time.sleep(0.5)
     # ws.close()

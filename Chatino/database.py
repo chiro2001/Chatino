@@ -143,6 +143,9 @@ class ChatinoDB:
         if not self.token_username_exist(username):
             raise ChatinoException.UsernameNotFound('Token %s not found!' % username)
 
+    def token_destroy_all(self):
+        self.col.token.drop()
+
     def message_mid_create(self):
         query = list(self.col.message.find({'updated': True}))
         if len(query) == 0:

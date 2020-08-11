@@ -82,6 +82,9 @@
 }
 ```
 - message
+    - cmd: message
+    - args: (See Message struct)
+        - system_message: type = system, content=..., msg=...
 
 *性能提升*
 - 暂无
