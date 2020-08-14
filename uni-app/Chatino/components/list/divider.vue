@@ -27,11 +27,11 @@
 			};
 		},
 		mounted: function() {
-			uni.navigateTo({
-				url: './../room/room',
-				animationType: 'slide-in-left',
-				animationDuration: 300
-			})
+			// uni.navigateTo({
+			// 	url: './../room/room',
+			// 	animationType: 'slide-in-left',
+			// 	animationDuration: 300
+			// })
 		}
 	}
 </script>

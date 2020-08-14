@@ -4,56 +4,49 @@
 		"style": {
 			// "navigationBarTitleText": "消息列表",
 			"navigationStyle": "custom",
-			"enablePullDownRefresh": true,			//开启下拉刷新
+			"enablePullDownRefresh": true, //开启下拉刷新
 			"transparentTitle": "none"
 		}
-	}    ,{
-            "path" : "pages/index/left-page",
-            "style" : {
-				"navigationStyle": "custom",
-				"navigationBarTitleText": "我"
-			}
-        }
-        ,{
-            "path" : "pages/room/room",
-            "style" : {
-            	"navigationBarTitleText": "房间",
-				"navigationStyle": "custom"
-            }
-        }
-        ,{
-            "path" : "pages/room/settings",
-            "style" : {
-            	"navigationBarTitleText": "房间设置"
-            }
-        }
-        ,{
-            "path" : "pages/settings",
-            "style" : {
-            	"navigationBarTitleText": "全局设置"
-            }
-        }
-        ,{
-            "path" : "pages/hot-rooms",
-            "style" : {
-            	"navigationBarTitleText": "热门房间",
-				"enablePullDownRefresh": true,			//开启下拉刷新
-				"navigationStyle": "custom"
-            }
-        }
-        ,{
-            "path" : "pages/login",
-            "style" : {
-            	"navigationBarTitleText": "登录"
-            }
-        }
-        ,{
-            "path" : "pages/register",
-            "style" : {
-            	"navigationBarTitleText": "注册"
-            }
-        }
-    ],
+	}, {
+		"path": "pages/index/left-page",
+		"style": {
+			"navigationStyle": "custom",
+			"navigationBarTitleText": "我"
+		}
+	}, {
+		"path": "pages/room/room",
+		"style": {
+			// "navigationBarTitleText": "房间",
+			"navigationStyle": "custom"
+		}
+	}, {
+		"path": "pages/room/settings",
+		"style": {
+			"navigationBarTitleText": "房间设置"
+		}
+	}, {
+		"path": "pages/settings",
+		"style": {
+			"navigationBarTitleText": "全局设置"
+		}
+	}, {
+		"path": "pages/hot-rooms",
+		"style": {
+			"navigationBarTitleText": "热门房间",
+			"enablePullDownRefresh": true, //开启下拉刷新
+			"navigationStyle": "custom"
+		}
+	}, {
+		"path": "pages/login",
+		"style": {
+			"navigationBarTitleText": "登录"
+		}
+	}, {
+		"path": "pages/register",
+		"style": {
+			"navigationBarTitleText": "注册"
+		}
+	}],
 	"globalStyle": {
 		// "navigationBarTextStyle": "white",
 		"navigationBarTextStyle": "black",
