@@ -46,7 +46,13 @@
 		"style": {
 			"navigationBarTitleText": "注册"
 		}
-	}],
+	}    ,{
+            "path" : "pages/login-help",
+            "style" : {
+				"navigationBarTitleText": "登录帮助"
+			}
+        }
+    ],
 	"globalStyle": {
 		// "navigationBarTextStyle": "white",
 		"navigationBarTextStyle": "black",

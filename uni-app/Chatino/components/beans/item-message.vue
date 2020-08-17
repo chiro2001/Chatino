@@ -129,6 +129,7 @@
 		float: left;
 	}
 
+	/* 用户名 */
 	.chat-receiver view:nth-of-type(2) {
 		margin: 0 50px 2px 50px;
 		padding: 0px;
@@ -137,6 +138,7 @@
 		text-align: left;
 	}
 
+	/* 内容 */
 	.chat-receiver view:nth-of-type(3) {
 		/* background-color: white; */
 		background-color: #ebebeb;
@@ -145,6 +147,9 @@
 		padding: 10px 10px 10px 10px;
 		border-radius: 7px;
 		text-indent: -12px;
+		white-space: normal;
+		word-break: break-all;
+		word-wrap: break-word;
 	}
 
 	/*  */
@@ -241,16 +246,16 @@
 	.chat-slide-left-enter-active {
 		transition: all .3s ease;
 	}
-	
+
 	.chat-slide-left-enter {
 		transform: translateX(-10px);
 		opacity: 0;
 	}
-	
+
 	.system-slide-enter-active {
 		transition: opacity .3s;
 	}
-	
+
 	.system-slide-enter {
 		opacity: 0;
 	}

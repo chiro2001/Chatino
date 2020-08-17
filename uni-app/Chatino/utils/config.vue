@@ -13,7 +13,9 @@
 			},
 			user: {
 				username: undefined,
-				password: undefined
+				password: undefined,
+				// cookie: 'sTgiHyc5cquTLx2W6tp9rzl',
+				cookie: undefined,
 			},
 			messages: [],
 		}
