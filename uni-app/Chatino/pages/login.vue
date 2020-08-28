@@ -47,8 +47,11 @@
 			}
 		},
 		mounted: function() {
-			config.data.user.username = 'TestUser2'
-			config.data.user.password = 'TestUser2'
+			this.config.data.user.username = 'TestUser2'
+			this.config.data.user.password = 'TestUser2'
+			
+			this.username = this.config.data.user.username
+			this.password = this.config.data.user.password
 		}
 	}
 </script>

@@ -74,6 +74,7 @@
 		},
 		methods: {
 			onLeftClick: function() {
+				uni.$emit('backRoomList')
 				uni.navigateBack({
 					animationType: "pop-out",
 					animationDuration: 300

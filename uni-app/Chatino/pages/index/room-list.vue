@@ -15,7 +15,8 @@
 						<template slot="right">
 							<view class="item-room-right">
 								<text class="item-room-right-text">{{ utils.showTime(item.time) }}</text>
-								<uni-badge class="item-room-right-badge" size="small" :text="item.unread" type="error"></uni-badge>
+								<uni-badge class="item-room-right-badge" size="small" :text="item.unread == 0 ? undefined : '' + item.unread"
+								 type="error"></uni-badge>
 							</view>
 						</template>
 					</uni-list-item>
@@ -31,6 +32,7 @@
 	import uniPopupMessage from '@/components/uni-popup/uni-popup-message.vue'
 	import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
 	import config from "@/utils/config.vue"
+	// import InDB from 'indb'
 
 	export default {
 		components: {
@@ -60,9 +62,14 @@
 			onClick: function(room) {
 				// console.log('/pages/room/room/?room=lounge')
 				// url最后不能用斜杠
-				console.log(uni.navigateTo({
+				// 取消未读标志
+				// TODO: 真正没看到的才算做unread
+				if (this.room_list.length != 0) {
+					this.room_list[0].unread = 0
+				}
+				uni.navigateTo({
 					url: '/pages/room/room?room=' + room
-				}))
+				})
 			},
 			clickRight: function() {
 				this.$refs.popup.open()
@@ -105,6 +112,7 @@
 				if (this.config.data.user.password != undefined)
 					sender.password = this.config.data.user.password
 				this.to_join = room
+				console.log("join sender", sender)
 				this.ws.methods.send(sender).then((res) => {
 					console.log(res)
 					if (res[0] != null) return
@@ -118,19 +126,24 @@
 				else if (data.cmd == 'onlineSet') {
 					if (this.to_join != undefined) {
 						this.config.data.user.cookie = data.cookie
+						this.saveData()
+						let users = ''
+						for (let i in data.nicks)
+							users = users + data.nicks[i] + ', '
+						users = users.slice(0, users.length - 2)
 						this.room_list.push({
 							title: this.to_join,
-							text: data.nicks[0],
+							text: '在线的用户: ' + users,
 							time: data.time / 1000,
 							unread: 0
 						})
 					}
 				} else if (data.cmd == 'info') {
 					var message = {
-						trip: data.trip,
+						// trip: data.trip,
 						content: data.text,
 						time: data.time / 1000,
-						username: 'system'
+						// username: data.trip
 					}
 					this.insertSystemMessage(message)
 				} else if (data.cmd == 'chat') {
@@ -163,6 +176,10 @@
 						content: data.text,
 					}
 					this.insertSystemMessage(message)
+					uni.showToast({
+						title: data.text,
+						icon: 'none'
+					})
 				} else {
 					var message = {
 						content: "未知的命令" + data.cmd + '' + JSON.stringify(data),
@@ -170,6 +187,10 @@
 						username: 'system',
 					}
 					this.insertSystemMessage(message)
+					uni.showToast({
+						title: "未知的命令" + data.cmd + '' + JSON.stringify(data),
+						icon: 'none'
+					})
 				}
 			},
 			insertSystemMessage: function(message) {
@@ -179,35 +200,81 @@
 				// 触发全局事件
 				uni.$emit('insertMessage', message)
 				// 修改room-list的文字
-				this.room_list[0].text = "系统消息: " + message.content
+				if (this.room_list.length != 0) {
+					this.room_list[0].text = "系统消息: " + message.content
+					this.room_list[0].time = message.time / 1
+					this.room_list[0].unread++
+				}
 			},
 			insertMessage: function(message) {
 				this.config.data.messages.push(message)
 				// 触发全局事件
 				uni.$emit('insertMessage', message)
-				
-				this.room_list[0].text = message.username + ": " + message.content
+
+				// 修改room-list的文字
+				if (this.room_list.length != 0) {
+					this.room_list[0].text = message.username + ": " + message.content
+					this.room_list[0].time = message.time / 1
+					this.room_list[0].unread++
+				}
+			},
+			onBackRoomList: function() {
+				if (this.room_list.length != 0) {
+					this.room_list[0].unread = 0
+				}
+				this.saveData()
+			},
+			loadData: async function() {
+				// console.log('this.indb', this.indb)
+				const userDB = this.idb.use('user')
+				let data = await userDB.get('user')
+				console.log("IndexedDB got", data)
+				if (data == undefined)
+					return
+				this.config.data.user = data
+			},
+			saveData: async function() {
+				// console.log('this.indb.use', this.indb.use)
+				const userDB = this.idb.use('user')
+				await userDB.put({
+					id: 'user',
+					value: this.config.data.user
+				})
+			},
+			// 异步的启动
+			onMounting: async function() {
+				// 加载用户设置
+				await this.loadData()
+				//// 已经自动加载
+				if (this.config.data.user.cookie != undefined)
+					this.clickRight()
+				// else if (this.config.data.user.password == undefined || this.config.data.user.username == undefined)
+				else if (this.config.data.user.cookie == undefined)
+					console.log('navigateTo RESUTLT', uni.navigateTo({
+						url: '/pages/login',
+						animationType: 'zoom-fade-out',
+						animationDuration: 300,
+					}))
 			}
 		},
 		mounted: function() {
 			this.ws.methods.startConnection().then((res) => {
-				console.log(res)
+				// console.log(res)
 				if (res[0] != null) return
 				this.connected = true
 			})
 			uni.onSocketMessage(this.parser)
 			// 监听消息
 			uni.$on('joinRoom', this.clickRight)
+			// 监听，消除未读消息
+			uni.$on('backRoomList', this.onBackRoomList)
 			// if (this.room_list.length == 0) this.clickRight()
 			// 保存了登录信息
-			if (this.config.data.user.cookie != undefined)
-				this.clickRight()
-			else if (this.config.data.user.password == undefined || this.config.data.user.username == undefined)
-				uni.navigateTo({
-					url: '/pages/login',
-					animationType: 'zoom-fade-out',
-					animationDuration: 300,
-				})
+			uni.showToast({
+				title: '正在加载中...',
+				icon: 'loading'
+			})
+			this.onMounting()
 		}
 	}
 </script>

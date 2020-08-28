@@ -21,14 +21,20 @@
 						</view>
 						<!-- 内容 -->
 						<view>
-							<view class="chat-left_triangle"></view>
-							<text>{{ message.content }}</text>
+							<view v-if="!config.data.settings.markdown" class="chat-left_triangle"></view>
+							<text v-if="!config.data.settings.markdown">{{ message.content }}</text>
+							<view v-if="config.data.settings.markdown" style="width: 100%; height: 100%;">
+								<view class="ql-container" style="width: 100%; height: 100%;">
+									<jyf-parser :html="md.render(message.content)" ref="article"></jyf-parser>
+								</view>
+							</view>
 						</view>
 						<!-- 时间 -->
 						<!-- <view v-if="time">
 						<text>{{ showTime(message.time) }}</text>
 					</view> -->
 					</view>
+					<!-- <view :class="config.data.settings.markdown ? 'chat-markdown' : 'sender'" v-if="mode == 'right'"> -->
 					<view class="chat-sender" v-if="mode == 'right'">
 						<!-- 头像 -->
 						<view v-if="head">
@@ -41,8 +47,15 @@
 						</view>
 						<!-- 内容 -->
 						<view>
-							<view class="chat-right_triangle"></view>
-							<text>{{ message.content }}</text>
+							<!-- <view class="chat-right_triangle"></view> -->
+							<!-- <text>{{ message.content }}</text> -->
+							<view v-if="!config.data.settings.markdown" class="chat-right_triangle"></view>
+							<text v-if="!config.data.settings.markdown">{{ message.content }}</text>
+							<view v-if="config.data.settings.markdown" style="width: 100%; height: 100%;">
+								<view class="ql-container" style="width: 100%; height: 100%;">
+									<jyf-parser :html="md.render(message.content)" ref="article"></jyf-parser>
+								</view>
+							</view>
 						</view>
 					</view>
 				</view>
@@ -71,9 +84,10 @@
 	}
 	 */
 	import utils from "../../utils/utils.js"
+
 	export default {
 		components: {
-
+			
 		},
 		props: {
 			message: {
@@ -120,6 +134,7 @@
 		font-family: "-apple-system", "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
 	}
  */
+	@import url("@/static/editor.css");
 	.chat-receiver {
 		clear: both;
 		font-size: 80%;
@@ -258,5 +273,9 @@
 
 	.system-slide-enter {
 		opacity: 0;
+	}
+	
+	.chat-markdown {
+		
 	}
 </style>
